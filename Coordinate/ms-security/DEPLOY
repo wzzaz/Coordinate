@@ -1,0 +1,14 @@
+﻿ms-security.h   头文件
+
+ms-security.lib win32静态库文件
+ms-securityd.lib debug版win32静态库文件
+
+libms-security.a linux静态库文件
+libms-securityd_debug.a debug版linux静态库文件
+
+win32-msvc: windows下msvc编译平台
+win32-mingw: mingw平台
+mac-clang: 苹果开发平台
+linux-x64-gcc: linux x64下gcc平台
+linux-x86-gcc: linux x86下gcc平台
+
