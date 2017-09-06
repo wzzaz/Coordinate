@@ -28,3 +28,5 @@ LIBS += -lAdvapi32 -luser32 -lIphlpapi
 
 HEADERS += \
     curveitem.h
+
+DISTFILES +=

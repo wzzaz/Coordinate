@@ -4,5 +4,8 @@
         <file>SpreadView.qml</file>
         <file>BarSeriesWindow.qml</file>
         <file>PopupWindow.qml</file>
+        <file>VirtualToolTip.qml</file>
+        <file>LineChartView.qml</file>
+        <file>BarChartView.qml</file>
     </qresource>
 </RCC>

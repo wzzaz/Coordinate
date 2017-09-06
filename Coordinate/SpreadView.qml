@@ -4,12 +4,16 @@ import QtQuick.Controls.Styles 1.4
 
 Rectangle {
     id: view_rect
-//    anchors.right: parent.right
-//    anchors.top: parent.top
-//    anchors.bottom: parent.bottom
-//    width: 300
-//    color: "#ebebeb"
-//    clip: true
+
+    property int choiceIndex: -1
+    function plus() {
+        choiceIndex++
+    }
+    function minus() {
+        choiceIndex--
+    }
+
+    readonly property ListModel viewmodel: view_model
 
     ScrollView {
         anchors.fill: parent
@@ -50,35 +54,45 @@ Rectangle {
     }
     ListModel {
         id: view_model
-        ListElement {
-            titleName: "Query"
-        }
-        ListElement {
-            titleName: "Number"
-        }
-        ListElement {
-            titleName: "Time"
-        }
-        ListElement {
-            titleName: "Name"
-        }
-        ListElement {
-            titleName: "Kind"
-        }
-        ListElement {
-            titleName: "Cool"
-        }
-        ListElement {
-            titleName: "Home"
-        }
-        ListElement {
-            titleName: "Shift"
-        }
-        ListElement {
-            titleName: "Enter"
-        }
-        ListElement {
-            titleName: "Ctrl"
+        Component.onCompleted: {
+            view_model.clear()
+            var model =
+                    [
+                        { titleName: "Query", flag: "Main", subModel:
+                                [
+                                    {headName: "Name",realValue: "No.7"},
+                                    {headName: "Setting Mode",realValue: "Auto"},
+                                    {headName: "Test",realValue: "Test Value" }
+                                ]
+                        },
+                        { titleName: "Number", flag: "Sub", subModel:
+                                [
+                                    {headName: "Color",realValue: "red"},
+                                    {headName: "Temp Range",realValue: "10-12"}
+                                ]
+                        },
+                        { titleName: "Time", flag: "Sub", subModel:
+                                [
+                                    {headName: "Color",realValue: "Blue"},
+                                    {headName: "Temp Range",realValue: "10-26"}
+                                ]
+                        },
+                        { titleName: "Name", flag: "Sub", subModel:
+                                [
+                                    {headName: "Color",realValue: "red"},
+                                    {headName: "Temp Range",realValue: "20-32"}
+                                ]
+                        },
+                        { titleName: "Kind", flag: "Sub", subModel:
+                                [
+                                    {headName: "Color",realValue: "red"},
+                                    {headName: "Temp Range",realValue: "10-65"}
+                                ]
+                        }
+                    ]
+            for( var i = 0; i < model.length; ++i ) {
+                view_model.append({ titleName: model[i]["titleName"], flag: model[i]["flag"], subModel: model[i]["subModel"] } )
+            }
         }
     }
     Component {
@@ -93,12 +107,25 @@ Rectangle {
                 view_background.updateHeight()
             }
 
+            ListModel {
+                id: sub_model
+                Component.onCompleted: {
+                    for( var i = 0; i < subModel.count; ++i ) {
+                        sub_model.append( {
+                                             headName: subModel.get(i)["headName"],
+                                             realValue: subModel.get(i)["realValue"]
+                                         } )
+                        console.log("SpreadView SubModel ",subModel.get(i)["headName"],subModel.get(i)["realValue"])
+                    }
+                }
+            }
+
             Rectangle {
                 id: background
                 anchors.fill: parent
                 width: parent.width
                 height: parent.height
-                color: "#006c76"
+                color: choiceIndex === index ? "red" : "#006c76"
                 property var colorDlg: null
                 Button {
                     id: spread_btn
@@ -135,17 +162,6 @@ Rectangle {
                         model: sub_model
                         delegate: sub_view_delegate
                     }
-                    ListModel {
-                        id: sub_model
-                        ListElement {
-                            headName: "Color"
-                            realValue: "red"
-                        }
-                        ListElement {
-                            headName: "Setting Mode"
-                            realValue: "Auto"
-                        }
-                    }
 
                     Component {
                         id: sub_view_delegate
@@ -172,9 +188,17 @@ Rectangle {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 80
                                 }
+                                Text {
+                                    visible: (index === 0 && flag === "Main") || (index === 1 && flag === "Sub")
+                                    text: String( realValue )
+                                    anchors.left: row_trans.right
+                                    anchors.leftMargin: 5
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
                                 Rectangle {
                                     id: color_area
-                                    visible: index === 0
+                                    visible: index === 0 && flag === "Sub"
                                     width: 20
                                     height: 20
                                     color: String( realValue )
@@ -192,7 +216,7 @@ Rectangle {
                                 }
                                 Button {
                                     id: show_window
-                                    visible: index === 0
+                                    visible: index === 0 && flag === "Sub"
                                     width: 50
                                     height: 24
                                     text: "Show"
@@ -210,7 +234,7 @@ Rectangle {
                                     height: 24
                                     anchors.left: row_trans.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: index === 1
+                                    visible: index === 1 && flag === "Main"
                                     model: ListModel {
                                         ListElement {
                                             text: "Auto"
@@ -275,6 +299,8 @@ Rectangle {
     }
     PopupWindow {
         id: popup_win
+        wheelEnable: true
+        viewFlag: 1
         visible: false
     }
     BarSeriesWindow {
